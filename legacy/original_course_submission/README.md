@@ -1,10 +1,10 @@
-# My original homework (December 2024)
+# My original project (December 2024)
 
-This is the notebook I handed in for homework 1 of the Machine Learning course (Prof. Hamed Baghban). I kept it unchanged on purpose, with the outputs of my Colab run, so anyone can check the problems listed below. The only change is that I removed my student ID from the first cell and from the file name.
+This is the notebook I handed in for project 1 of the Machine Learning course (Prof. Hamed Baghban). I kept it unchanged, with the outputs of my Colab run, so that the problems listed below can be checked. The only change is that I removed my student ID from the first cell and from the file name.
 
-- `MohammadMahdi_Faraji_homework1.ipynb`: the notebook.
+- `MohammadMahdi_Faraji_project1.ipynb`: the notebook.
 - The data file it reads, `synthetic_customer_behavior (1).csv`, is the same file as [`data/synthetic_customer_behavior.csv`](../../data/synthetic_customer_behavior.csv) (byte for byte, only the name is shorter).
-- The assignment sheet is not included. Its content is in [`docs/assignment.md`](../../docs/assignment.md).
+- The project description is not included. Its content is in [`docs/assignment.md`](../../docs/assignment.md).
 
 ## Does it still run?
 

@@ -1,37 +1,39 @@
-# Customer behavior analysis: missing labels, unbalanced classes and an accuracy that lies
+# Customer behavior analysis (Machine Learning course, project 1)
 
 **Author:** MohammadMahdi Faraji
-**Course:** Machine Learning (Prof. Hamed Baghban). This was homework 1 of the course (fall 2024). I redid it after the course as a small worked example for people who are just starting with machine learning.
+**Course:** Machine Learning, Prof. Hamed Baghban, fall 2024. This was the first project of the course. After the course I did it again, more carefully, as a worked example for people who are new to machine learning.
 
-An online shop has a table of 1000 customers, but for 700 of them it doesn't know what kind of product they bought. The homework asked to fill in the gaps, check whether the categories are balanced, measure a classifier and describe the valuable customers. The interesting part turned out to be a trap: a model with 70 % accuracy that had learned nothing at all.
+The data is a table of 1000 customers of an online shop. For 700 of them the purchase category is missing. The project asked to fill in the missing categories, check if the categories are balanced, evaluate a classifier with a confusion matrix and F1 score, find the valuable customers, and explain how an unbalanced distribution affects accuracy. The main lesson for me was that a model with 70 % accuracy can still be useless.
 
 <p align="center"><img src="results/figures/confusion_matrices.png" width="95%"></p>
-<p align="center"><sub>Each row is the real category, each column is the model's answer. Left: a "model" that always says Electronics. Middle: a random forest, which does almost exactly the same thing. Right: the same forest trained with SMOTE, which spreads its answers but still can't tell the categories apart.</sub></p>
+<p align="center"><sub>Rows are the real categories, columns are the predictions. Left: a rule that always predicts Electronics. Middle: random forest. Right: random forest trained with SMOTE.</sub></p>
 
-## What this is about, in plain words
+## The idea in simple words
 
-Imagine a teacher who answers "true" to every true/false question. If 65 % of the questions are true, the teacher gets 65 % right without reading a single question. That's exactly what happened in my first version of this homework: the random forest answered "Electronics" for every customer, and because 65 % of the customers are Electronics buyers, it scored 70 % on a small test set. It looked like a decent result. It was the share of Electronics in the test set.
+Think of a student who answers "true" to every question of a true/false exam. If 65 % of the answers are "true", this student gets 65 % without reading the questions. My first version of this project had the same problem. The random forest predicted "Electronics" for all customers, and because about 65 % of the customers bought electronics, it got 70 % accuracy on my small test set. The model had not learned anything.
 
-This repository is the redone homework. It answers the six tasks of the assignment ([`docs/assignment.md`](docs/assignment.md)), and on the way it shows three things every beginner runs into sooner or later:
-- **Missing values:** how to check *why* they are missing, and why filling them with a model can make things worse.
-- **Unbalanced classes:** why accuracy is the wrong number to look at, and what to look at instead.
-- **Honest testing:** compare with the simplest possible rule, and never test a model on values that a model made up.
+In this new version I answer the six tasks of the project ([`docs/assignment.md`](docs/assignment.md)) and pay more attention to three points:
+- why the values are missing, and why filling them with a model can be a bad idea,
+- why accuracy is not enough when the classes are unbalanced,
+- comparing every model with a very simple baseline.
 
 ## At a glance
 
 | | |
 |---|---|
-| Data | 1000 customers of an online shop (synthetic data from the course), 12 columns |
-| Missing | the purchase category of 700 customers, missing completely at random |
-| Categories (300 known) | Electronics 65 %, Clothing 17 %, Groceries 12 %, Books 7 % |
-| Methods | correlation, ANOVA and chi-square tests, k-means, logistic regression, decision tree, random forest, class weights, oversampling, SMOTE, repeated cross-validation, permutation test |
-| Main result | no model beats "always Electronics" (accuracy 0.65) or random guessing (macro F1 about 0.24) |
-| Valuable customers | the top 20 % by spending bring 42 % of the money, and they look like everyone else |
-| Runs in | about 2 minutes, in Colab or locally |
+| Data | 1000 customers (synthetic data given in the course), 12 columns |
+| Missing values | purchase category of 700 customers, missing at random |
+| Known categories (300) | Electronics 65 %, Clothing 17 %, Groceries 12 %, Books 7 % |
+| Methods | correlation, statistical tests, k-means, logistic regression, decision tree, random forest, class weights, oversampling, SMOTE, cross-validation |
+| Main result | no model is clearly better than simple guessing: best accuracy 0.65 (the same as always predicting Electronics), best macro F1 0.24 (random guessing: 0.23) |
+| Valuable customers | the top 20 % by spending bring 42 % of the money |
+| Run time | about 2 minutes, in Colab or on a PC |
 
 ## Results
 
-**1. The category can't be predicted.** I tested every model with repeated 5-fold cross-validation on the 300 customers with a known category (25 tests per model), and compared them with two rules that don't look at the customer at all:
+### 1. The category can't be predicted from these columns
+
+I evaluated each model on the 300 customers whose category is known, with 5-fold cross-validation repeated 5 times (25 tests per model). I also added two simple baselines that don't use the customer data at all.
 
 | | accuracy | balanced accuracy | macro F1 |
 |---|---:|---:|---:|
@@ -42,66 +44,66 @@ This repository is the redone homework. It answers the six tasks of the assignme
 | random forest with SMOTE | 0.52 | 0.25 | 0.24 |
 | logistic regression with class weights | 0.22 | 0.25 | 0.19 |
 
-All 10 models are in [`results/model_comparison.csv`](results/model_comparison.csv). In plain words:
-- **Accuracy** is never better than always saying Electronics.
-- **Balanced accuracy** (the hit rate inside each category, averaged) stays around 0.25, which is what you get by guessing among four categories.
-- **Macro F1** (every category counts the same) is not clearly better than random guessing: 0.24 against 0.23, while it changes by about 0.05 from one test to the next.
-- A **permutation test** (train the model again on shuffled categories, 200 times) gives p = 0.40: the model does no better on the real categories than on random ones.
+All 8 models and the 2 baselines are in [`results/model_comparison.csv`](results/model_comparison.csv). What the table shows:
+- No model has a higher accuracy than always predicting Electronics.
+- Balanced accuracy (the average recall of the four categories) is about 0.25 for all models. Random guessing between four categories also gives 0.25.
+- Macro F1 (the average F1 of the four categories) is 0.24 for the best model and 0.23 for random guessing. This difference is smaller than the change from one test to another (about 0.05).
+- I also ran a permutation test: the model was trained 200 times on shuffled categories. The p-value is 0.40, so the model does not do better on the real categories than on random ones.
 
-**2. Filling the gaps with a model makes things worse.** A classifier trained on the 300 known customers calls 687 of the 700 unknown ones "Electronics". After that, 88 % of all customers look like Electronics buyers, much more unbalanced than the real 65 %. And if you then test a new model on this filled-in table, the accuracy jumps to 0.88. Nothing was learned; one model simply agrees with another one. This is called *data leakage*. I filled the gaps with random draws that keep the known shares, and marked every filled value, so that only real categories are used for testing.
+### 2. Filling the missing values with a model is misleading
 
-**3. Valuable customers.** Spending is very uneven: the median customer spends about 84, the top 20 % spend at least 147 and bring 42 % of all the money. But these big spenders have the same age, gender, region, time on the website and categories as everyone else. Only the number of viewed products is slightly higher (10.7 against 9.7). So in this data, valuable customers can only be found by their spending, not by who they are.
+A random forest trained on the 300 known customers predicts "Electronics" for 687 of the 700 missing ones. After this filling, 88 % of the table is Electronics instead of 65 %. A new model tested on the filled table gets 0.88 accuracy, but this only shows that two models agree with each other. This is called data leakage. So I filled the missing values with random draws that keep the known shares, marked them in a new column `category_filled`, and used only the real categories for testing.
 
-**4. What an unbalanced class does to accuracy.** To show the effect where a model *can* learn something, I generated a simple two-class problem and made the small class rarer and rarer:
+### 3. Valuable customers
+
+The median customer spends about 84. The top 20 % spend at least 147, and together they bring 42 % of all the money. Apart from spending, they are very similar to the other customers in age, gender, region, time on the website and category. They only view a few more products (10.7 against 9.7). So in this data the valuable customers can only be found by how much they spend.
+
+### 4. Effect of an unbalanced distribution on accuracy
+
+Our data has no signal, so to show this effect I made a simple two-class dataset with `make_classification` and made the small class rarer step by step:
 
 <p align="center"><img src="results/figures/imbalance_effect.png" width="95%"></p>
 
-Without class weights (left), the accuracy climbs from 0.70 to 0.97 while the share of the small class that the model finds falls from 0.65 to 0.05. At 98 to 2, the model is hardly different from always answering the big class. With class weights (right), it still finds about half of the small class, at the price of a lower accuracy.
+Without class weights (left), the accuracy goes up from 0.70 to 0.97, but the recall of the small class goes down from 0.65 to 0.05. At 98/2 the model almost always predicts the big class. With class weights (right), the model still finds about half of the small class at 98/2, but the accuracy is lower.
 
 ## How it works, step by step
 
-**0. Check why values are missing.** The 300 customers with a category and the 700 without one have the same averages in every column (all p-values above 0.1), and a model can't tell the two groups apart (ROC AUC 0.50). So the gaps are random, and the 300 known rows are a fair sample.
+0. **Missing values.** I compared the 300 customers with a category and the 700 without one. Their averages are similar in every column (all p-values above 0.1), and a classifier can't separate the two groups (ROC AUC 0.50). So the values are missing at random, and the 300 known rows are a fair sample.
+1. **Correlation (task 1).** Only `Feature_1` to `Feature_5` are correlated with each other (strongest pair *r* = -0.80). In a scatter plot they form four separate groups of 250 customers, which looks like the output of a random data generator. None of the columns is clearly related to the category. I didn't remove any column, because no column is a copy of another one and the spending columns are needed for task 5. (In my first version I removed `Purchase_Amount`, which task 5 needs.)
+2. **Filling the missing categories (task 2).** I compared three ways: the most common category, a model, and random draws with the known shares. I used the random draws and added the column `category_filled`. The completed table is [`results/completed_dataset.csv`](results/completed_dataset.csv).
+3. **Balance (task 3).** The bar chart shows about ten Electronics buyers for each book buyer. The notebook explains class weights, oversampling, SMOTE and undersampling, and shows SMOTE on the known rows. Balancing is done only on the training part of each fold, never on the test part.
+4. **Confusion matrix and F1 (task 4).** Logistic regression, decision tree and random forest, plain and with class weights, oversampling or SMOTE (8 models), compared with the 2 baselines. Accuracy, balanced accuracy, macro F1, weighted F1, confusion matrices and a permutation test.
+5. **Customer behavior (task 5).** The spending distribution, the top 20 %, a comparison of the top customers with the others, and four customer groups from k-means on spending, time on the website and viewed products.
+6. **Effect of imbalance (task 6).** Numbers from our data, and the experiment above.
 
-**1. Correlation (task 1).** Only the five unnamed columns `Feature_1` to `Feature_5` are correlated with each other (the strongest pair has *r* = −0.80). A scatter plot shows why: they form four separate clouds of exactly 250 customers each, the typical output of a random data generator. No column is clearly related to the category. I removed no column: none is a copy of another, and the spending columns are needed for the valuable-customer question. (My first version removed `Purchase_Amount`, which is exactly the column that question is about.)
+## Mistakes in my first version
 
-**2. Missing categories (task 2).** I compared three ways to fill them (the most common value, a model, random draws with the known shares) and kept the random draws plus a `category_filled` column. The completed table is [`results/completed_dataset.csv`](results/completed_dataset.csv).
-
-**3. Balance (task 3).** A bar chart shows almost ten Electronics buyers for every book buyer. The notebook explains class weights, random oversampling, SMOTE and undersampling, and shows SMOTE on the known rows. Balancing is always done inside the training part of each test, never on the test data.
-
-**4. Confusion matrix and F1 (task 4).** Ten models (logistic regression, decision tree and random forest, each plain and with class weights, oversampling or SMOTE) against the two simple rules, with accuracy, balanced accuracy, macro F1 and weighted F1, confusion matrices and a permutation test.
-
-**5. Customer behavior (task 5).** Spending distribution, the top 20 %, a comparison of big spenders with the others, and four behavior segments from k-means on spending, time on the website and viewed products.
-
-**6. Effect of imbalance (task 6).** Our own numbers, plus the controlled experiment above.
-
-## What went wrong in my first version
-
-The original notebook is kept in [`legacy/original_course_submission/`](legacy/original_course_submission/), with a table of every problem and where to find it. The main ones:
-- It only ran because of variables left over from earlier runs. In a fresh session, it stops with a `NameError`.
-- The confusion matrix under "Decision Tree" was actually the random forest's.
-- The random forest and the neural network predicted "Electronics" for every test customer, and the weighted F1 hid this.
-- The 700 gaps were filled by the random forest, which turned 883 of the 1000 customers into Electronics buyers.
+The original notebook is in [`legacy/original_course_submission/`](legacy/original_course_submission/), with a list of its problems. The main ones:
+- It ran only because of variables left from earlier runs. In a new session it stops with a `NameError`.
+- The confusion matrix titled "Decision Tree" was actually from the random forest.
+- The random forest and the neural network predicted "Electronics" for every test customer, and the weighted F1 did not show this.
+- The random forest filled the 700 missing values, so 883 of the 1000 customers became Electronics buyers.
 - The written discussion and tasks 5 and 6 were missing.
 
-All details: [`docs/changes_from_course_project.md`](docs/changes_from_course_project.md).
+More details are in [`docs/changes_from_course_project.md`](docs/changes_from_course_project.md).
 
-## How much to trust these numbers
+## Limitations
 
-- The data is synthetic. The patterns (or the lack of them) say little about real shoppers.
-- With only 20 book buyers, every number about books is uncertain.
-- `Feature_3` and gender show weak hints about the category (p = 0.006 and 0.015). But with 12 columns tested, a hint like this turns up by pure chance almost every second time. A fair check would need new customers.
+- The data is synthetic, so the results say little about real customers.
+- There are only 20 book buyers, so every number about books is uncertain.
+- `Feature_3` and gender show a weak relation with the category (p = 0.006 and 0.015). But I tested 12 columns, and with 12 tests the chance that at least one p-value is under 0.05 just by luck is about 46 %. New data would be needed to check it.
 
-## Try it yourself
+## How to run
 
-**In Colab:** open `notebooks/customer_behavior_analysis.ipynb` in Google Colab and choose *Runtime → Run all*. It asks you to upload `data/synthetic_customer_behavior.csv`. The libraries are already in Colab; if `imbalanced-learn` is missing, the first cell installs it.
+**In Colab:** open `notebooks/customer_behavior_analysis.ipynb` in Google Colab and choose *Runtime > Run all*. The notebook asks you to upload `data/synthetic_customer_behavior.csv`. If `imbalanced-learn` is not installed, the first cell installs it.
 
-**Locally** (tested with Python 3.14):
+**On your PC** (tested with Python 3.14):
 ```
 pip install -r requirements.txt
 cd notebooks
 jupyter notebook customer_behavior_analysis.ipynb
 ```
-Run all cells. The plots and tables are written to `results/`. Then this command checks the main numbers again with plain numpy, without pandas or scikit-learn:
+After running all cells, the figures and tables are saved in `results/`. To check the main numbers again with plain numpy (without pandas or scikit-learn):
 ```
 python tools/check_numbers.py
 ```
@@ -111,15 +113,15 @@ python tools/check_numbers.py
 ```
 ├── notebooks/customer_behavior_analysis.ipynb   the whole analysis, task by task, with explanations
 ├── data/synthetic_customer_behavior.csv         the data from the course
-├── results/                                     plots, the model table, the completed data, a summary
+├── results/                                     figures, the model table, the completed data, a summary
 ├── tools/check_numbers.py                       independent check of the main numbers
-├── docs/                                        the assignment in my own words, what changed since the course
-└── legacy/original_course_submission/           my original homework, unchanged except for my student ID
+├── docs/                                        the project description in my own words, what changed since the course
+└── legacy/original_course_submission/           my original project, unchanged except for my student ID
 ```
 
 ## Thanks
 
-- Prof. Hamed Baghban, for the course and the assignment.
+- Prof. Hamed Baghban, for the course and the project.
 - I used an AI assistant to help review and rewrite the code, to clean it up and prepare it for publishing.
 
 ## License
