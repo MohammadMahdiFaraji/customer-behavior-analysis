@@ -7,7 +7,7 @@ The course version is in [`legacy/original_course_submission/`](../legacy/origin
 | First version | New version |
 |---|---|
 | Worked only in my Colab session, because some variables (`rf_pred`, `numerical_columns`) were left over from earlier runs | Runs from top to bottom in a fresh session, in Colab or locally, in about 2 minutes |
-| The decision tree and the neural network had no fixed random seed | One seed (`SEED = 42`) everywhere; two runs give exactly the same file |
+| The decision tree and the neural network had no fixed random seed | One seed (`SEED = 42`) everywhere; two runs give exactly the same numbers, tables and plots |
 | No saved results | Plots, tables, the completed data and a summary are written to `results/`, and `tools/check_numbers.py` checks the main numbers with plain numpy |
 
 ## Task by task
