@@ -1,0 +1,15 @@
+rows: 1000
+missing categories: 700
+known counts: {'Electronics': 194, 'Clothing': 50, 'Groceries': 36, 'Books': 20}
+majority share: 0.6467
+missing at random AUC: 0.497
+r Feature_2 Feature_5: -0.7976
+r Feature_1 Feature_4: 0.6104
+groups of Feature_1..5: [250, 250, 250, 250]
+filled by a model: {'Books': 0, 'Clothing': 10, 'Electronics': 687, 'Groceries': 3}
+filled by random draws: {'Books': 42, 'Clothing': 129, 'Electronics': 445, 'Groceries': 84}
+always Electronics accuracy: 0.6467
+best macro F1: 0.2377
+permutation p-value: 0.398
+top 20 % limit: 146.54
+top 20 % share of money: 0.4229

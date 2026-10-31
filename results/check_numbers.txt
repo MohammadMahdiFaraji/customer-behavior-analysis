@@ -1,0 +1,19 @@
+PASS  rows: ours 1000, notebook 1000
+PASS  missing categories: ours 700, notebook 700
+PASS  known counts: ours {'Books': 20, 'Clothing': 50, 'Electronics': 194, 'Groceries': 36}, notebook {'Electronics': 194, 'Clothing': 50, 'Groceries': 36, 'Books': 20}
+PASS  share of Electronics: ours 0.6467, notebook 0.6467
+PASS  r Feature_2 Feature_5: ours -0.7976, notebook -0.7976
+PASS  r Feature_1 Feature_4: ours 0.6104, notebook 0.6104
+PASS  top 20 % limit: ours 146.54, notebook 146.54
+PASS  top 20 % share of money: ours 0.4229, notebook 0.4229
+PASS  always Electronics accuracy: ours 0.6467, notebook 0.6467
+PASS  always Electronics macro F1: ours 0.1964, notebook 0.1964
+PASS  always Electronics weighted F1: ours 0.5079, notebook 0.5079
+PASS  always Electronics balanced accuracy: ours 0.25, notebook 0.25
+PASS  completed rows: ours 1000, notebook 1000
+PASS  known categories unchanged: ours True, notebook True
+PASS  filled rows marked: ours 700, notebook 700
+PASS  every row has a category: ours True, notebook True
+PASS  filled counts: ours {'Books': 42, 'Clothing': 129, 'Electronics': 445, 'Groceries': 84}, notebook {'Books': 42, 'Clothing': 129, 'Electronics': 445, 'Groceries': 84}
+
+17 of 17 checks passed

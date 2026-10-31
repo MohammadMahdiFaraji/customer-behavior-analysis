@@ -1,0 +1,11 @@
+# notebooks/customer_behavior_analysis.ipynb and tools/check_numbers.py
+# Versions of the reported run: Python 3.14.3, pandas 3.1.0, numpy 2.5.4, scipy 1.18.1,
+# scikit-learn 1.9.1, imbalanced-learn 0.14.2, matplotlib 3.11.2, seaborn 0.13.2
+pandas
+numpy
+scipy
+scikit-learn
+imbalanced-learn
+matplotlib
+seaborn
+notebook        # Jupyter, to open the notebook locally
